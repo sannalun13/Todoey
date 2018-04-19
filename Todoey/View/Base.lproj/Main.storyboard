@@ -9,16 +9,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Table View Controller-->
+        <!--Todoey-->
         <scene sceneID="g9d-Up-QCV">
             <objects>
-                <tableViewController id="akI-VU-GMa" sceneMemberID="viewController">
+                <tableViewController id="akI-VU-GMa" customClass="CategoryViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="O5a-e8-f1m">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="cya-Fe-sQf">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="cya-Fe-sQf">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cya-Fe-sQf" id="gf1-mY-SmV">
@@ -32,7 +32,14 @@
                             <outlet property="delegate" destination="akI-VU-GMa" id="Z5G-v8-qMR"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Mro-nt-xSh"/>
+                    <navigationItem key="navigationItem" title="Todoey" id="Mro-nt-xSh">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="g2A-Gn-XkW">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addButtonPressed:" destination="akI-VU-GMa" id="qs6-WI-slg"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="C7t-gF-udJ" kind="show" identifier="goToItems" id="Yah-CC-jdI"/>
                     </connections>
@@ -41,7 +48,7 @@
             </objects>
             <point key="canvasLocation" x="1028" y="-36"/>
         </scene>
-        <!--Todoey-->
+        <!--Items-->
         <scene sceneID="goe-sw-omb">
             <objects>
                 <tableViewController id="C7t-gF-udJ" customClass="ToDoViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
@@ -72,7 +79,7 @@
                             <outlet property="delegate" destination="C7t-gF-udJ" id="fh4-dz-Ych"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Todoey" id="f7R-fa-qbs">
+                    <navigationItem key="navigationItem" title="Items" id="f7R-fa-qbs">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="K2T-Pf-KnH">
                             <color key="tintColor" red="0.98756741751269039" green="0.98756741751269039" blue="0.98756741751269039" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>

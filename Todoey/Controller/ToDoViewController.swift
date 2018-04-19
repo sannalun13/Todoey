@@ -13,12 +13,16 @@ class ToDoViewController: UITableViewController {
     
     var itemArray = [ToDoItems]()
     
+    var selectedCategory : Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-       loadItems()
         
     }
     
@@ -29,6 +33,7 @@ class ToDoViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
         cell.textLabel?.text = itemArray[indexPath.row].title
@@ -73,6 +78,7 @@ class ToDoViewController: UITableViewController {
             let newItem = ToDoItems(context: self.context)
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             
             self.saveItems()
@@ -103,9 +109,17 @@ class ToDoViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    func loadItems(with request: NSFetchRequest<ToDoItems> = ToDoItems.fetchRequest()){
+    func loadItems(with request: NSFetchRequest<ToDoItems> = ToDoItems.fetchRequest(), andPredicate: NSPredicate? = nil){
         
         //let request : NSFetchRequest<ToDoItems> = ToDoItems.fetchRequest()
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = andPredicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
         
         do {
             itemArray = try context.fetch(request)
@@ -124,11 +138,11 @@ extension ToDoViewController: UISearchBarDelegate {
         
         let request : NSFetchRequest<ToDoItems> = ToDoItems.fetchRequest()
         
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
+        let searchPredicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
         
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
-        loadItems(with: request)
+        loadItems(with: request, andPredicate: searchPredicate)
     }
     
 
