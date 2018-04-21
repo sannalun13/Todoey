@@ -7,31 +7,40 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-    var categories = [Category]()
+    //the first time when you are creating Realm instanse
+    //therefore it can throw, but this is completely fine
+    //Initialise a few access point to our realm database
+    let realm = try! Realm()
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    //changed from an array of items to this new collection type
+    //a collection of results that are Category objects
+    var categories : Results<Category>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadCategories()
-
+        
+        //print(Realm.Configuration.defaultConfiguration.fileURL)
+        
     }
     
     //MARK: - Tableview datasource methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        //returns the number of categories as the number of rows
+        //return one if it's nil
+        return categories?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No categories added yet"
         
         return cell
     }
@@ -42,12 +51,12 @@ class CategoryViewController: UITableViewController {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     
-    //To be triggered just before we perform the segue
+    //Before we bring the user to the new page
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoViewController
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categories[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
     
@@ -61,11 +70,16 @@ class CategoryViewController: UITableViewController {
         let alert = UIAlertController(title: "Add new category", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add ", style: .default) { (action) in
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             newCategory.name = textField.text!
-            self.categories.append(newCategory)
             
-            self.saveCategories()
+            //categories is now assigned to an auto-update result
+            //which will monitor for changes automatically
+            //we don't need to assign things to it anymore
+            
+            //self.categories.append(newCategory)
+            
+            self.save(category: newCategory)
             
         }
         
@@ -81,10 +95,13 @@ class CategoryViewController: UITableViewController {
     }
     
     //MARK: - Data manipulation methods
-    
-    func saveCategories() {
+    //we pass in the new category that we created
+    func save(category: Category) {
+        //do some changes in our realm database
         do {
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print ("Error saving category, \(error)")
         }
@@ -92,18 +109,16 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()){
+    func loadCategories(){
         
-        do {
-            categories = try context.fetch(request)
-        } catch {
-            print ("Error feting category data, \(error)")
-        }
+        //set categories to look inside our realm, and fetch objects that belongs to the category data type
+        categories = realm.objects(Category.self)
         
+        //call all of the tableview datasource methods again, to refresh the page
         tableView.reloadData()
-        
+
     }
-    
+
 
     
     
